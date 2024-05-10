@@ -16,7 +16,7 @@ class Reciever(db.Model):
     email = db.Column(db.String(100),nullable=False,primary_key=True)
     def __repr__(self) -> str:
         return f"{self.email}"
-
+process_run=True
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -33,14 +33,27 @@ def save_email():
 
 @app.route('/home')
 def home():
+    global process_run
+    global video_stream
+    process_run=True
+    video_stream.setcam()
     return render_template('home.html')
 
 @app.route('/watch')
 def watch():
     return render_template('watch.html')
 
+@app.get('/shutdown')
+def shutdown():
+    global video_stream
+    global process_run
+    process_run=False
+    video_stream.stop()
+    return redirect(url_for('home'))
+
 def gen(camera):
-    while True:
+    global process_run
+    while process_run:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
