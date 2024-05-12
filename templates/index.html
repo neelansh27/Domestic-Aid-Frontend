@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Video Stream</title>
-  </head>
-  <body>
-    <div class="container">
+<head>
+  <title>Video Stream</title>
+  <link rel="stylesheet" href="{{url_for('static',filename='index.css')}}">
+</head>
+<body>
+  <div class="container">
+    <div class="view">
       <form method="post" action="/save_email">
-        <input id="email" type="email" name="email" required />
-        <input type="submit" name="submit" value="Submit" />
+        <input class="email" id="email" placeholder="Enter you email" type="email" name="email" required />
+        <div>
+          <input type="submit" class="submit" name="submit" value="Submit" />
+        </div>
         <div>
           This is the email which will be used to send alerts.
         </div>
       </form>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

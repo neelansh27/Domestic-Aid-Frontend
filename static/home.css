@@ -1,0 +1,30 @@
+.container{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: #383838;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* width: 100vw; */
+}
+.container h3{
+    font-size: larger;
+}
+.menu{
+    border: 2px solid white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 10px;
+}
+.menu-button {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 16px;
+}
+.menu-button:hover{
+    background-color: #555;
+}

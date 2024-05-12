@@ -5,8 +5,7 @@ from email.message import EmailMessage
 def send_notification(email):
     email_sender = 'adamsjohnwork@gmail.com'
     email_password = conf.data['password']
-
-    email_receiver = 'neelishero@gmail.com' # enter email
+    email_receiver = email # enter email
 
     subject = "Something Detected"
 

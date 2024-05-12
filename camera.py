@@ -2,12 +2,12 @@ import cv2
 from notify import send_notification
 from ultralytics import YOLO
 class VideoCamera(object):
-    def __init__(self):
+    def __init__(self,email):
+        self.video = cv2.VideoCapture(0)
         self.model=YOLO('yolov8m.pt')
         self.act_model=YOLO('best.pt')
-
-    def setcam(self):
-        self.video = cv2.VideoCapture(0)
+        # print('class',email)
+        self.email = email
 
     def __del__(self):
         self.video.release()        
@@ -24,7 +24,8 @@ class VideoCamera(object):
                 if (res[0].boxes):
                     # WE WILL SEND NOTIFICATION HERE
                     print('Some appliances are running')
-                    send_notification('neelishero@gmail.com')
+                    print(self.email)
+                    send_notification(self.email)
                 else:
                     print('No appliances are running')
                 # ret, jpeg = cv2.imencode('.jpg', res)
