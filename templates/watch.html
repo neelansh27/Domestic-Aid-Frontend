@@ -1,19 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Monitor</title>
-  <link rel="stylesheet" href="{{url_for('static',filename='watch.css')}}">
-</head>
-<body>
-  <div class="container">
-    <div class="view">
-      <img class="feed" src="{{ url_for('video_feed') }}" />
-      <div>
-        <a href="{{url_for('shutdown')}}"><button class="stop-btn" type="button">Stop</button></a>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Monitor</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='watch.css')}}" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="view">
+        <video id="myVidPlayer" muted autoplay></video>
+        <canvas id="canvas" style="display: none;" width="600" height="300"></canvas>
+        <!-- <img style="display: none;" class="feed" src="{{ url_for('video_feed') }}" /> -->
+        <div>
+          <a href="{{url_for('home')}}"><button class="stop-btn" type="button">Stop</button></a>
+        </div>
       </div>
+      <!-- <div class= 'video'> -->
+      <!-- <img id="photo" width="400" height="300"> -->
+    <!-- </div> -->
     </div>
-  </div>
-  
-</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      const socket = io.connect(
+        window.location.protocol + "//" + document.domain + ":" + location.port
+      );
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+      const video = document.querySelector("#myVidPlayer");
+      const photo = document.getElementById('photo');
+      video.width = 500;
+      video.height = 380;
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          video.srcObject = stream;
+          video.onloadedmetadata = (e) => {
+            video.play();
+          };
+        })
+        .catch((err) => {
+          alert(err);
+        });
+      const FPS = 10;
+      setInterval(() => {
+        width = video.width;
+        height = video.height;
+        context.drawImage(video, 0, 0, width, height);
+        var data = canvas.toDataURL("image/jpeg", 0.5);
+        context.clearRect(0, 0, width, height);
+        socket.emit("image", data);
+      }, 5000);
+      <!-- socket.on("processed_image", function (image) { -->
+      <!--   photo.setAttribute("src", image); -->
+      <!-- }); -->
+    </script>
+  </body>
 </html>

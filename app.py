@@ -3,13 +3,19 @@ from flask import Flask, render_template, Response, redirect,url_for,request
 from camera import VideoCamera
 from flask_sqlalchemy import SQLAlchemy
 import os
+import cv2
+import base64
+import numpy as np
 from notify import send_notification
+from flask_socketio import SocketIO, emit
 current_file_path = os.path.abspath(__file__)
 basedir = os.path.dirname(current_file_path)
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SECRET_KEY"] = "secret!"
+socketio = SocketIO(app)
 db = SQLAlchemy(app)
 
 class Reciever(db.Model):
@@ -74,9 +80,30 @@ def gen(camera):
 @app.route('/video_feed')
 def video_feed():
      return Response(gen(video_stream),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+def base64_to_image(base64_string):
+    # Extract the base64 encoded binary data from the input string
+    base64_data = base64_string.split(",")[1]
+    # Decode the base64 data to bytes
+    image_bytes = base64.b64decode(base64_data)
+    # Convert the bytes to numpy array
+    image_array = np.frombuffer(image_bytes, dtype=np.uint8)
+    # Decode the numpy array as an image using OpenCV
+    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    return image
+
+@socketio.on('image')
+def process_image(image):
+    global video_stream
+    if not video_stream:
+        client=Reciever.query.all()[0]
+        video_stream=VideoCamera(client.email)
+    img=base64_to_image(image)
+    processed_img=video_stream.process_frame(img)
+    emit("processed_image", processed_img)
+    
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='127.0.0.1',port="5000")
+    socketio.run(host='127.0.0.1',port="5000")
