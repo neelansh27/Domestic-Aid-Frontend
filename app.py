@@ -102,8 +102,7 @@ def process_image(image):
     img=base64_to_image(image)
     processed_img=video_stream.process_frame(img)
     emit("processed_image", processed_img)
-    
-if __name__ == '__main__':
-    with app.app_context():
+with app.app_context():
         db.create_all()
+if __name__ == '__main__':
     socketio.run(host='127.0.0.1',port="5000")
