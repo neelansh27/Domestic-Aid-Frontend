@@ -56,31 +56,6 @@ def home():
 @app.route('/watch')
 def watch():
     return render_template('watch.html')
-@app.route('/send_email')
-def send():
-    client=db.session.query(Reciever).all()[0]
-    send_notification(client.email)
-    return client.email
-
-@app.get('/shutdown')
-def shutdown():
-    global video_stream
-    global process_run
-    process_run=False
-    video_stream.stop()
-    return redirect(url_for('home'))
-
-def gen(camera):
-    global process_run
-    while process_run:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-@app.route('/video_feed')
-def video_feed():
-     return Response(gen(video_stream),
-                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def base64_to_image(base64_string):
     # Extract the base64 encoded binary data from the input string

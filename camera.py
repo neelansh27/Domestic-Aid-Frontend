@@ -5,7 +5,7 @@ class VideoCamera(object):
     def __init__(self,email):
         # self.video = cv2.VideoCapture(0)
         self.model=YOLO('yolov8m.pt')
-        self.act_model=YOLO('best.pt')
+        self.act_model=YOLO('mymodel.pt')
         # print('class',email)
         self.email = email
     # not using video source so commenting out
